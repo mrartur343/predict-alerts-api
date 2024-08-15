@@ -88,6 +88,56 @@ def filter_by_relevant_seasons(data, end_date):
     previous_year = current_date - pd.DateOffset(years=1)
     data['started_at'] = pd.to_datetime(data['started_at'], utc=True)  # Convert to UTC
     return data[((current_date - data['started_at']).dt.days <= 365) | (data['started_at'].dt.month == previous_year.month)]
+def train_function(date_str: str, region: str, file_name: str):
+    try:
+        # Download and load the dataset
+        csv_content = download_dataset(dataset_url)
+        data = pd.read_csv(StringIO(csv_content.decode('utf-8')))
+
+        # Prompt the user to enter the end date for training the model
+        training_data_to = date_str
+
+        # if training_data_to is not a valid date, default to today
+        try:
+            training_data_to = pd.to_datetime(training_data_to, utc=True) if training_data_to else pd.to_datetime('today', utc=True)
+        except ValueError:
+            print("Invalid end date format. Defaulting to today.")
+            training_data_to = pd.to_datetime('today', utc=True)
+
+        # Filter the data for the relevant seasons up to the end date
+        data = filter_by_relevant_seasons(data, training_data_to)
+
+        input_region = region.strip()
+        if not input_region:
+            raise ValueError('No region entered. Exiting...')
+
+        region_data = filter_by_region(data, input_region)
+        print(f"Data points after filtering by region '{input_region}': {len(region_data)}")
+
+        # Preprocess the data
+        processed_data = preprocess_data(region_data, end_date=training_data_to)
+
+        model_filename = input('Enter the name of the file to save the model to: ').strip()
+        if not model_filename:
+            model_filename = f'apm-{random.randint(100, 999)}.pkl'
+            print(f'No filename provided, using a random one instead: {model_filename}')
+
+        # Train the GBM model
+        model = train_gbm_model(processed_data)
+
+        # Save the trained model to a file
+        save_model(model, f'models/{model_filename}')
+
+        print(f"Model trained and saved to models/{model_filename}")
+        print('\nNow that your model has been saved, run `python predict.py` to make predictions.')
+
+        if file_name.strip().lower() == 'yes':
+            runpy.run_path('predict.py')
+        else:
+            print('Exiting...')
+            exit()
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def main():
     try:
