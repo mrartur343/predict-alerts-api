@@ -128,14 +128,6 @@ def train_function(date_str: str, region: str, file_name: str):
         # Save the trained model to a file
         save_model(model, f'models/{model_filename}')
 
-        print(f"Model trained and saved to models/{model_filename}")
-        print('\nNow that your model has been saved, run `python predict.py` to make predictions.')
-
-        if file_name.strip().lower() == 'yes':
-            runpy.run_path('predict.py')
-        else:
-            print('Exiting...')
-            exit()
     except Exception as e:
         print(f"An error occurred: {e}")
 
