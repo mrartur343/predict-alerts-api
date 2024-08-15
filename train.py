@@ -117,7 +117,7 @@ def train_function(date_str: str, region: str, file_name: str):
         # Preprocess the data
         processed_data = preprocess_data(region_data, end_date=training_data_to)
 
-        model_filename = input('Enter the name of the file to save the model to: ').strip()
+        model_filename = file_name.strip()
         if not model_filename:
             model_filename = f'apm-{random.randint(100, 999)}.pkl'
             print(f'No filename provided, using a random one instead: {model_filename}')
