@@ -9,6 +9,6 @@ app = FastAPI()
 
 @app.get("/")
 def get_alerts_prediction(region_name: str):
-	predict_results = predict.predict_function(region_name+".pkl", datetime.datetime.now().strftime("%m/%d/%Y")).to_dict('records')
+	predict_results = predict.predict_function(region_name+".pkl", datetime.datetime.now().strftime("%m/%d/%Y"), alert_threshold=0).to_dict('records')
 	print(predict_results)
 	return JSONResponse(list(predict_results))
