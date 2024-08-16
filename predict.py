@@ -51,7 +51,7 @@ def make_predictions(model, features):
 	predictions = model.predict(features)
 	return predictions
 
-def predict_function(model_filename, current_date_input: str,alert_threshold: float = 0.1, days_to_predict: int = 7) -> DataFrame:
+def predict_function(model_filename, current_date_input: str,alert_threshold: float = 0.1, days_to_predict: int = 2) -> DataFrame:
 	try:
 
 		model_filepath = f'models/{model_filename}'
